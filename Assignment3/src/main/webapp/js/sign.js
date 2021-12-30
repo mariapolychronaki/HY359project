@@ -602,4 +602,28 @@ function getDoctors() {
 	xhr.send(data);
 }
 
+function adminloginPOST(){
+		var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			responseData = JSON.parse(xhr.responseText);
+			document.getElementById("logout").style.display = "flex";
+			//setChoicesForLoggedUser(responseData);
+			$("#ajaxContent").html(responseData.OK);
+		} else if (xhr.status !== 200) {
+			responseData = JSON.parse(xhr.responseText);
+			$("#error").html(responseData.error);
+			//('Request failed. Returned status of ' + xhr.status);
+		}
+	};
+	var data = $('#adminloginForm').serialize();
+	xhr.open('POST', 'AdminLoginServlet');
+	console.log(data);
+	xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	xhr.send(data);
+}
 
+function adminshowLogin(){
+	$("#ajaxContent").load("adminLogin.html");
+}
