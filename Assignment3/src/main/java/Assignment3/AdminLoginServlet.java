@@ -2,6 +2,7 @@ package Assignment3;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,8 +12,11 @@ import javax.servlet.http.HttpSession;
 
 import com.google.gson.JsonObject;
 
+import database.tables.EditDoctorTable;
 import database.tables.EditSimpleUserTable;
+import mainClasses.Doctor;
 import mainClasses.SimpleUser;
+import mainClasses.User;
 
 /**
  * Servlet implementation class AdminLoginServlet
@@ -43,8 +47,13 @@ public class AdminLoginServlet extends HttpServlet {
 		String username=request.getParameter("username");
 		String password=request.getParameter("password");
 		
+		EditDoctorTable dt = new EditDoctorTable();
+		ArrayList<Doctor> array = null;
+		ArrayList<JsonObject> array1 = new ArrayList<JsonObject>();
+		
+		
 		HttpSession session=request.getSession(true);
-		System.out.println("MPIKA EDW!!!@!!!!!!");
+		
 		EditSimpleUserTable temp =new EditSimpleUserTable();
 		try {
 			SimpleUser sUser=temp.databaseToSimpleUser(username, password);
@@ -60,8 +69,33 @@ public class AdminLoginServlet extends HttpServlet {
 				response.setStatus(200);
 				JsonObject jo = new JsonObject();
 				jo.addProperty("OK", "You are loggedin as admin");
-				response.getWriter().write(jo.toString());
+				array1.add(jo);
+			
 				session.setAttribute("loggedIn",username);
+				ArrayList<SimpleUser>suarray=temp.databaseToCertifiedSimmpleUser();
+				System.out.println(suarray.size());
+				array = dt.databaseToDoctors();
+					for(int i=0; i<array.size(); i++) {
+						JsonObject jo1 = new JsonObject();
+						jo1.addProperty("username", array.get(i).getUsername());
+						jo1.addProperty("email", array.get(i).getEmail());
+						jo1.addProperty("firstName", array.get(i).getFirstname());
+						jo1.addProperty("lastName", array.get(i).getLastname());
+						jo1.addProperty("birthdate", array.get(i).getBirthdate());
+						array1.add(jo1);
+					}
+					for(int i=0; i<suarray.size(); i++) {
+						JsonObject jo1 = new JsonObject();
+						jo1.addProperty("username", suarray.get(i).getUsername());
+						jo1.addProperty("email", suarray.get(i).getEmail());
+						jo1.addProperty("firstName", suarray.get(i).getFirstname());
+						jo1.addProperty("lastName", suarray.get(i).getLastname());
+						jo1.addProperty("birthdate", suarray.get(i).getBirthdate());
+						array1.add(jo1);
+					}
+					response.getWriter().write(array1.toString());
+				
+				
 			}
 			else{
 				response.setStatus(404);

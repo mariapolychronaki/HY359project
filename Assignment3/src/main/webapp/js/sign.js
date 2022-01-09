@@ -1,3 +1,4 @@
+
 function check_password() {
 	var password_1 = document.getElementById("password1").value;
 	var password_2 = document.getElementById("password2").value;
@@ -307,7 +308,6 @@ function auto_complete(lat, lon) {
 /*function showMap(lon, lat){
 	var map = new OpenLayers.Map("map_div");
 	map.addLayer(new OpenLayers.Layer.OSM());
-
 	var lonLat = new OpenLayers.LonLat( lon , lat )
 		  .transform(
 			new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
@@ -315,7 +315,6 @@ function auto_complete(lat, lon) {
 		  );
 		  
 	var zoom=16;
-
 	var markers = new OpenLayers.Layer.Markers( "Markers" );
 	map.addLayer(markers);
     
@@ -324,7 +323,6 @@ function auto_complete(lat, lon) {
 	map.setCenter (lonLat, zoom);
 	map.updateSize();
 	document.getElementById("map_div").style.visibility = "visible";
-
 }
 */
 
@@ -332,7 +330,6 @@ function auto_complete(lat, lon) {
 	var country = document.getElementById("country").value;
 	var town = document.getElementById("town").value;
 	var address = document.getElementById("addr").value;
-
 		the_address = country+' '+town+' '+address;
 		console.log(the_address);
 		geocoder.geocode({'address': the_address}, function(results, status){
@@ -343,7 +340,6 @@ function auto_complete(lat, lon) {
 			}
 		});
 }
-
 */
 
 function createUser() {
@@ -602,6 +598,36 @@ function getDoctors() {
 	xhr.send(data);
 }
 
+function deleteUser(data){
+		var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			//responseData = JSON.parse(xhr.responseText);
+			//console.log(responseData);
+			//$("#ajaxContent").html(createTableFromJSON(responseData));
+		}
+	};
+	var servletData="username="+data+"&";
+	xhr.open('POST', 'DeleteUserServlet');
+	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhr.send(servletData);
+}
+
+function adminPrintsData(data){
+		var html="";
+	 
+	for(let i=1; i<data.length; i++){
+		html += "<div><table><tr><th>Category</th><th>Value</th></tr>";
+		for (const x in data[i]) {
+			var category=x;
+			var value=data[i][x];
+			html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+		}
+		html+="<button value=\'"+data[i].username+"\ ' onclick='deleteUser(this.value)'>Delete</button>"
+	}
+		return html;
+}
 function adminloginPOST(){
 		var xhr = new XMLHttpRequest();
 	xhr.onload = function() {
@@ -609,8 +635,9 @@ function adminloginPOST(){
 		if (xhr.readyState === 4 && xhr.status === 200) {
 			responseData = JSON.parse(xhr.responseText);
 			document.getElementById("logout").style.display = "flex";
-			//setChoicesForLoggedUser(responseData);
-			$("#ajaxContent").html(responseData.OK);
+			console.log(responseData);
+			$("#ajaxContent").html(responseData[0].OK);
+			$("#ajaxContent").append(adminPrintsData(responseData));
 		} else if (xhr.status !== 200) {
 			responseData = JSON.parse(xhr.responseText);
 			$("#error").html(responseData.error);

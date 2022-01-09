@@ -16,6 +16,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import mainClasses.Doctor;
 import mainClasses.Randevouz;
 
 /**
@@ -44,7 +46,42 @@ public class EditSimpleUserTable {
         return json;
     }
     
-   
+  
+    public boolean DeleteUser(String username) throws SQLException, ClassNotFoundException{
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        Statement stmt1 = con.createStatement();
+        boolean flag=false;
+        ResultSet rs = null;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM users WHERE username = '" + username + "'");
+            while (rs.next()) {
+            	System.out.println("MPIKA!!!!");
+               flag=true;
+               
+              //  DB_Connection.printResults(rs);
+            }
+           if (flag==true) {
+        	   stmt1.executeUpdate("DELETE FROM users WHERE username='"+username+"'");
+        	   return true;
+           }else {
+        	   stmt1.executeUpdate("DELETE FROM doctors WHERE username='"+username+"'");
+        	   return true;
+           }
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+            
+        }
+    finally {
+    	rs.close();
+    	con.close();
+    }
+    return false;
+        
+
+    }
+    
     
     public void updateSimpleUser(String username,double weight) throws SQLException, ClassNotFoundException{
         Connection con = DB_Connection.getConnection();
@@ -94,6 +131,28 @@ public class EditSimpleUserTable {
        }
        return temp;
    }
+    
+    public ArrayList<SimpleUser> databaseToCertifiedSimmpleUser() throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        ArrayList<SimpleUser> simpleUser=new ArrayList<SimpleUser>();
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM users ");
+            while (rs.next()) {
+                String json = DB_Connection.getResultsToJSON(rs);
+                Gson gson = new Gson();
+                SimpleUser su = gson.fromJson(json, SimpleUser.class);
+                simpleUser.add(su);
+            }
+            return simpleUser;
+
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
     
     public SimpleUser databaseToSimpleUser(String username, String password) throws SQLException, ClassNotFoundException{
          Connection con = DB_Connection.getConnection();
