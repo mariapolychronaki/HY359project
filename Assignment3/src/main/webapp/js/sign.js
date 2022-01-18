@@ -410,9 +410,85 @@ function setChoicesForLoggedUser(data) {
 	$("#choices").append("<div><button onclick='getBMI()'>Get BMI</button></div>");
 	$("#choices").append("<div><button onclick='getIdealWeight()'>Get ideal weight</button></div>");
 	$("#choices").append("<div><button onclick='getDoctors()'>Get certified doctors</button></div>");
+	$("#choices").append("<div><button onclick='showNewBloodTest()'>Upload a blood test</button></div>");
 
 
 }
+
+function showNewBloodTest(){
+	$("#choices").append("<form id='tempFormBlood' name='tempFormBlood' >");
+	$("#choices").append("<label id='AMKAb'>AMKA</label>");
+	$("#choices").append("<input type='text' id='AMKAbt' />");
+	$("#choices").append("<label id='testDateb'>Test Date</label>");
+	$("#choices").append("<input type='text' id='testDatetbt' />");
+	$("#choices").append("<label id='medicalCenterb'>Medical Center</label>");
+	$("#choices").append("<input type='text' id='medicalCenterbt'  />");
+	$("#choices").append("<label id='vitaminD3b'>Vitamin D3</label>");
+	$("#choices").append("<input type='number' id='vitaminD3bt' />");
+	$("#choices").append("<label id='vitaminD3Levelb'>Vitamin D3 level</label>");
+	$("#choices").append("<input type='text' id='vitaminD3Levelbt'  />");
+	$("#choices").append("<label id='vitaminB12b'>Vitamin B12</label>");
+	$("#choices").append("<input type='number' id='vitaminB12bt' />");
+	$("#choices").append("<label id='vitaminB12Levelb'>Vitamin B12 level</label>");
+	$("#choices").append("<input type='text' id='vitaminB12Levelbt'  />");
+	$("#choices").append("<label id='cholesterolb'>Cholesterol</label>");
+	$("#choices").append("<input type='number' id='cholesterolbt' />");
+	$("#choices").append("<label id='cholesterolLevelb'>Cholesterol level</label>");
+	$("#choices").append("<input type='text' id='cholesterolLevelbt'  />");
+	$("#choices").append("<label id='bloodSugarb'>Blood Sugar</label>");
+	$("#choices").append("<input type='number' id='bloodSugarbt' />");
+	$("#choices").append("<label id='bloodSugarLevelb'>Blood Sugar level</label>");
+	$("#choices").append("<input type='text' id='bloodSugarLevelbt'  />");
+	$("#choices").append("<label id='ironb'>Iron</label>");
+	$("#choices").append("<input type='number' id='ironbt' />");
+	$("#choices").append("<label id='ironLevelb'>Iron level</label>");
+	$("#choices").append("<input type='text' id='ironLevelbt'  />");
+	$("#choices").append("<button id='submitBloodTest' type='button' value='Create blood test' class='btn' onclick='newBloodTest()' >Create blood test</button>");
+}
+
+
+function newBloodTest(){
+	
+	
+	const formData = {
+		amka: document.getElementById("AMKAbt").value,
+		test_date: document.getElementById("testDatetbt").value,
+		medical_center: document.getElementById("medicalCenterbt").value,
+		vitamin_d3: document.getElementById("vitaminD3bt").value,
+		vitamin_d3_level: document.getElementById("vitaminD3Levelbt").value,
+		vitamin_b12: document.getElementById("vitaminB12bt").value,
+		vitamin_b12_level: document.getElementById("vitaminB12Levelbt").value,
+		cholesterol: document.getElementById("cholesterolbt").value,
+		cholesterol_level: document.getElementById("cholesterolLevelbt").value,
+		blood_sugar: document.getElementById("bloodSugarbt").value,
+		blood_sugar_level: document.getElementById("bloodSugarLevelbt").value,
+		iron: document.getElementById("ironbt").value,
+		iron_level: document.getElementById("ironLevelbt").value
+	}
+	
+	console.log(formData)
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			console.log(xhr.responseText)
+			responseData = JSON.parse(xhr.responseText);
+			$("#ajaxContent").html("OK: " +responseData.OK);
+		} else if (xhr.status !== 200) {
+			responseData = JSON.parse(xhr.responseText);
+			$("#ajaxContent").html(responseData.error);
+			//('Request failed. Returned status of ' + xhr.status);
+		}
+	};
+
+	var data = formData
+	console.log(formData)
+	xhr.open('POST', 'NewBloodTestServlet');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(JSON.stringify(formData));
+	
+}
+
 
 function updateUser(username) {
 	const formData = {
