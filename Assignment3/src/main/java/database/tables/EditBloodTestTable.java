@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,6 +63,28 @@ public class EditBloodTestTable {
             System.err.println(e.getMessage());
         }
         return null;
+    }
+     
+     
+     public ArrayList<BloodTest> databaseToBloodTests() throws SQLException, ClassNotFoundException{
+         Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        ArrayList<BloodTest> bts = new ArrayList<>();
+
+        ResultSet rs = stmt.executeQuery("SELECT * FROM bloodtest");
+        try {
+            while(rs.next()) {
+                  String json=DB_Connection.getResultsToJSON(rs);
+                  Gson gson = new Gson();
+                  BloodTest bt = gson.fromJson(json, BloodTest.class);
+                  bts.add(bt);
+            }
+          
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return bts;
     }
     
        public void updateBloodTest(int id,double chol) throws SQLException, ClassNotFoundException{

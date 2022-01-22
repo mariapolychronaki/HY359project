@@ -1,37 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head> 
-    	<link rel="stylesheet" href="css/sign_up.css" />
-    	<title>Index</title>
-    	<script type="text/javascript" src="js/sign.js" defer></script>
-        <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>	
-    </head>
-    <body>
-    
-	    <h1>Please Register or Login</h1>
-		<input id="register" type="button" value="Register" onclick="showRegistrationForm();" class="btn"/>
-		<input id="adminlogin" type="button" value="Admin Login" onclick="adminshowLogin();" class="btn"/>
-		<input id="login" type="button" value="Login" onclick="showLogin();" class="btn"/>
-		<input id="logout" type="button" value="Logout" onclick="logout();" class="btn" style="display:none;"/>
-    	<div>
-	        <h2>HY 359</h2> 
-	       
-	
-	        <div class="row">
-	            <div class="column column1Width" id="choices" style="background-color:#ADD8E6;">           
-	            </div>
-	            <div class="column column2Width" id="output" style="background-color:#ADD8E6;">
-	                <h2>Output</h2>
-	                <div id="ajaxContent"></div>
-	                  
-	            </div>
-				
-	        </div>
-	        <br>
-        </div>
-            
-            
-    </body>
+<head>
+<link rel="stylesheet" href="css/sign_up.css" />
+<title>Index</title>
+<script type="text/javascript" src="js/sign.js" defer></script>
+<script type="text/javascript"
+	src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+	<div class="options">
+		<h1>Please Register or Login</h1>
+		<input id="register" type="button" value="Register"
+			onclick="showRegistrationForm();" class="btn" /> <input
+			id="adminlogin" type="button" value="Admin Login"
+			onclick="adminshowLogin();" class="btn" /> <input id="login"
+			type="button" value="Login" onclick="showLogin();" class="btn" /> <input
+			id="logout" type="button" value="Logout" onclick="logout();"
+			class="btn" style="display: none;" />
+	</div>
+
+	<div>
+		<h2>HY 359</h2>
+
+
+		<div class="row">
+			<div class="choicesWrapper">
+				<div class="column column1Width" id="choices"
+					style="background-color: #ADD8E6;"></div>
+				<div id="bloodtests" class="bloodtests">
+				</div>
+			</div>
+
+			<div class="column column2Width" id="output"
+				style="background-color: #ADD8E6;">
+				<h2>Output</h2>
+				<div id="ajaxContent"></div>
+
+			</div>
+
+		</div>
+		<br>
+	</div>
+
+
+</body>
 
 </html>
 

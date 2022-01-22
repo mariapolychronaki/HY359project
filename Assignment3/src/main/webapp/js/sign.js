@@ -411,39 +411,40 @@ function setChoicesForLoggedUser(data) {
 	$("#choices").append("<div><button onclick='getIdealWeight()'>Get ideal weight</button></div>");
 	$("#choices").append("<div><button onclick='getDoctors()'>Get certified doctors</button></div>");
 	$("#choices").append("<div><button onclick='showNewBloodTest()'>Upload a blood test</button></div>");
+	$("#choices").append("<div><button onclick='compareBloodTests()'>Compare blood tests</button></div>");
 
 
 }
 
 function showNewBloodTest(){
-	$("#choices").append("<form id='tempFormBlood' name='tempFormBlood' >");
-	$("#choices").append("<label id='AMKAb'>AMKA</label>");
-	$("#choices").append("<input type='text' id='AMKAbt' />");
-	$("#choices").append("<label id='testDateb'>Test Date</label>");
-	$("#choices").append("<input type='text' id='testDatetbt' />");
-	$("#choices").append("<label id='medicalCenterb'>Medical Center</label>");
-	$("#choices").append("<input type='text' id='medicalCenterbt'  />");
-	$("#choices").append("<label id='vitaminD3b'>Vitamin D3</label>");
-	$("#choices").append("<input type='number' id='vitaminD3bt' />");
-	$("#choices").append("<label id='vitaminD3Levelb'>Vitamin D3 level</label>");
-	$("#choices").append("<input type='text' id='vitaminD3Levelbt'  />");
-	$("#choices").append("<label id='vitaminB12b'>Vitamin B12</label>");
-	$("#choices").append("<input type='number' id='vitaminB12bt' />");
-	$("#choices").append("<label id='vitaminB12Levelb'>Vitamin B12 level</label>");
-	$("#choices").append("<input type='text' id='vitaminB12Levelbt'  />");
-	$("#choices").append("<label id='cholesterolb'>Cholesterol</label>");
-	$("#choices").append("<input type='number' id='cholesterolbt' />");
-	$("#choices").append("<label id='cholesterolLevelb'>Cholesterol level</label>");
-	$("#choices").append("<input type='text' id='cholesterolLevelbt'  />");
-	$("#choices").append("<label id='bloodSugarb'>Blood Sugar</label>");
-	$("#choices").append("<input type='number' id='bloodSugarbt' />");
-	$("#choices").append("<label id='bloodSugarLevelb'>Blood Sugar level</label>");
-	$("#choices").append("<input type='text' id='bloodSugarLevelbt'  />");
-	$("#choices").append("<label id='ironb'>Iron</label>");
-	$("#choices").append("<input type='number' id='ironbt' />");
-	$("#choices").append("<label id='ironLevelb'>Iron level</label>");
-	$("#choices").append("<input type='text' id='ironLevelbt'  />");
-	$("#choices").append("<button id='submitBloodTest' type='button' value='Create blood test' class='btn' onclick='newBloodTest()' >Create blood test</button>");
+	$("#bloodtests").append("<form id='tempFormBlood' name='tempFormBlood' >");
+	$("#bloodtests").append("<label id='AMKAb'>AMKA</label>");
+	$("#bloodtests").append("<input type='text' id='AMKAbt' />");
+	$("#bloodtests").append("<label id='testDateb'>Test Date</label>");
+	$("#bloodtests").append("<input type='text' id='testDatetbt' />");
+	$("#bloodtests").append("<label id='medicalCenterb'>Medical Center</label>");
+	$("#bloodtests").append("<input type='text' id='medicalCenterbt'  />");
+	$("#bloodtests").append("<label id='vitaminD3b'>Vitamin D3</label>");
+	$("#bloodtests").append("<input type='number' id='vitaminD3bt' />");
+	$("#bloodtests").append("<label id='vitaminD3Levelb'>Vitamin D3 level</label>");
+	$("#bloodtests").append("<input type='text' id='vitaminD3Levelbt'  />");
+	$("#bloodtests").append("<label id='vitaminB12b'>Vitamin B12</label>");
+	$("#bloodtests").append("<input type='number' id='vitaminB12bt' />");
+	$("#bloodtests").append("<label id='vitaminB12Levelb'>Vitamin B12 level</label>");
+	$("#bloodtests").append("<input type='text' id='vitaminB12Levelbt'  />");
+	$("#bloodtests").append("<label id='cholesterolb'>Cholesterol</label>");
+	$("#bloodtests").append("<input type='number' id='cholesterolbt' />");
+	$("#bloodtests").append("<label id='cholesterolLevelb'>Cholesterol level</label>");
+	$("#bloodtests").append("<input type='text' id='cholesterolLevelbt'  />");
+	$("#bloodtests").append("<label id='bloodSugarb'>Blood Sugar</label>");
+	$("#bloodtests").append("<input type='number' id='bloodSugarbt' />");
+	$("#bloodtests").append("<label id='bloodSugarLevelb'>Blood Sugar level</label>");
+	$("#bloodtests").append("<input type='text' id='bloodSugarLevelbt'  />");
+	$("#bloodtests").append("<label id='ironb'>Iron</label>");
+	$("#bloodtests").append("<input type='number' id='ironbt' />");
+	$("#bloodtests").append("<label id='ironLevelb'>Iron level</label>");
+	$("#bloodtests").append("<input type='text' id='ironLevelbt'  />");
+	$("#bloodtests").append("<button id='submitBloodTest' type='button' value='Create blood test' class='btn' onclick='newBloodTest()' >Create blood test</button>");
 }
 
 
@@ -486,6 +487,23 @@ function newBloodTest(){
 	xhr.open('POST', 'NewBloodTestServlet');
 	xhr.setRequestHeader('Content-type', 'application/json');
 	xhr.send(JSON.stringify(formData));
+	
+}
+function compareBloodTests(){
+	
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			responseData = JSON.parse(xhr.responseText);
+			console.log(responseData);
+			$("#ajaxContent").html(createTableFromJSON(responseData));
+		}
+	};
+	var data = null;
+	xhr.open('POST', 'CompareBloodTestsServlet');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(data);
 	
 }
 
