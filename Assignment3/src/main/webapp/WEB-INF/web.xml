@@ -64,6 +64,24 @@
   	<description></description>
   	<servlet-class>Assignment3.CompareBloodTestsServlet</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>CertifyDoctorServlet</servlet-name>
+  	<display-name>CertifyDoctorServlet</display-name>
+  	<description></description>
+  	<servlet-class>Assignment3.CertifyDoctorServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>GetRandevouzServlet</servlet-name>
+  	<display-name>GetRandevouzServlet</display-name>
+  	<description></description>
+  	<servlet-class>Assignment3.GetRandevouzServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>NewRantevouzSevrelt</servlet-name>
+  	<display-name>NewRantevouzSevrelt</display-name>
+  	<description></description>
+  	<servlet-class>Assignment3.NewRantevouzSevrelt</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>RegisterServlet</servlet-name>
   	<url-pattern>/RegisterServlet</url-pattern>
@@ -103,5 +121,17 @@
   <servlet-mapping>
   	<servlet-name>CompareBloodTestsServlet</servlet-name>
   	<url-pattern>/CompareBloodTestsServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>CertifyDoctorServlet</servlet-name>
+  	<url-pattern>/CertifyDoctorServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>GetRandevouzServlet</servlet-name>
+  	<url-pattern>/GetRandevouzServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>NewRantevouzSevrelt</servlet-name>
+  	<url-pattern>/NewRantevouzSevrelt</url-pattern>
   </servlet-mapping>
 </web-app>

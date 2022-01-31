@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +49,29 @@ public class EditRandevouzTable {
     }
     
     
-    
+     
+     public ArrayList<Randevouz> databaseToRandevouzDoctor(int id) throws SQLException, ClassNotFoundException{
+         Connection con = DB_Connection.getConnection();
+         ArrayList<Randevouz> array= new ArrayList<Randevouz>();
+        Statement stmt = con.createStatement();
+
+        ResultSet rs;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM randevouz WHERE doctor_id= '" + id + "'");
+            while(rs.next()) {
+                
+                String json=DB_Connection.getResultsToJSON(rs);
+                Gson gson = new Gson();
+                Randevouz bt = gson.fromJson(json, Randevouz.class);
+                array.add(bt);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        return array;
+    }
 
       
      public Randevouz jsonToRandevouz(String json) {

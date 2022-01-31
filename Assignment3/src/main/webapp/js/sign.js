@@ -360,7 +360,7 @@ function createUser() {
 			const responseData = JSON.parse(xhr.responseText);
 			console.log(responseData)
 			if (responseData.doctor_id != null) {
-				document.getElementById('ajaxContent').innerHTML = 'Request OK. Doctor : ' + responseData.username +' is added . Returned status of ' + xhr.status + "<br>";
+				document.getElementById('ajaxContent').innerHTML = 'Request OK. Doctor : ' + responseData.username + ' is added . Returned status of ' + xhr.status + "<br>";
 			} else {
 				document.getElementById('ajaxContent').innerHTML = 'Request OK. User : ' + responseData.username + ' is added . Returned status of ' + xhr.status + "<br>";
 			}
@@ -374,13 +374,117 @@ function createUser() {
 	xhr.send(JSON.stringify(data));
 }
 
+function showRandevouzForm(){
+$("#choices").load("loadRandevouz.html");
+}
+
+function getRandevouz(data){
+		
+		var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			//responseData = JSON.parse(xhr.responseText);
+			console.log(responseData);
+			$("#ajaxContent").html(createTableFromJSON(responseData));
+		}
+	};
+	var servletData = "doctor_id=" + data + "&";
+	xhr.open('POST', 'GetRandevouzServlet');
+	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	console.log(servletData);
+	xhr.send(servletData);
+}
+
+function checkDate(){
+	var d1 = new Date();
+	d1.setHours(0,0,0,0);
+	var d2 = new Date(document.getElementById('date_time').value);
+	d2.setHours(0,0,0,0);
+	var check = d1.getTime() < d2.getTime();
+	console.log(d1,d2);
+	if(check==false){
+		document.getElementById('dateError').innerHTML="date can't be past!";
+	}else{
+		document.getElementById('dateError').innerHTML="";
+	}
+}
+
+function checkPrice(){
+	var p = new Date(document.getElementById('price').value);
+	if(p<10 || p>80){
+		document.getElementById('priceError').innerHTML="price can't be  greater than 80 or less than 10!";
+	}else{
+		document.getElementById('priceError').innerHTML="";
+	}
+}
+
+function newRandevouz(id){
+
+$("#randevouz").html("");
+	$("#randevouz").append("<h1>New Randevouz</h1>");
+	$("#randevouz").append("<form id='tempForm' name='tempForm' >");
+	$("#randevouz").append("<label for='date_time'>Date and Time</label>");
+	$("#randevouz").append("<div id='dateError'></div>"); 
+	$("#randevouz").append("<input type='Date' onchange='checkDate()' name='date_time' id='date_time' value='2022-01-01' min='2022-01-01' max='2023-12-31' required />");
+	$("#randevouz").append("<label for='time'>Time </label>");
+	$("#randevouz").append("<div id='timeError'></div>"); 
+	$("#randevouz").append("<input id='time' value type='time' name='timestamp' step='1800' min='08:00' max='20:30' >");
+	$("#randevouz").append("<label for='price'>Price</label>");
+	$("#randevouz").append("<div id='priceError'></div>");
+	$("#randevouz").append("<input type='number' name='price'onchange='checkPrice()' id='price' min='10' max='80' required>");
+	$("#randevouz").append("<label for='doctor_info'>Doctor Info</label>");
+	$("#randevouz").append("<input type='text' name='doctor_info' id='doctor_info'>");
+	$("#randevouz").append("<button id='submit' type='button' value='Create' class='btn' onclick='newRantevouzPOST(\"" + id + "\")' >Update</button>");
+	$("#randevouz").append("</form>");
+
+}
+
+function newRantevouzPOST(data2){
+	
+	//let myForm = document.getElementById('newRantevouzForm');
+	//let formData = new FormData(myForm);
+	console.log(data2);
+	
+	//formData.forEach((value, key) => (data[key] = value));
+	var jsonData  = {
+		doctor_id : data2,
+		price: document.getElementById('price').value,
+		doctor_info:  document.getElementById('doctor_info').value,
+		date_time:  document.getElementById('date_time').value+' '+ document.getElementById('time').value
+	}
+
+	console.log(jsonData);
+
+
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			const responseData = JSON.parse(xhr.responseText);
+			console.log(responseData)
+			if (responseData.doctor_id != null) {
+				document.getElementById('ajaxContent').innerHTML = 'Request OK. Doctor : ' + responseData.username + ' is added . Returned status of ' + xhr.status + "<br>";
+			} else {
+				document.getElementById('ajaxContent').innerHTML = 'Request OK. User : ' + responseData.username + ' is added . Returned status of ' + xhr.status + "<br>";
+			}
+
+		} else if (xhr.status !== 200) {
+			document.getElementById('ajaxContent').innerHTML = 'Request failed ' + xhr.responseText + '. Returned status of ' + xhr.status + "<br>";
+		}
+	}
+	xhr.open('POST', 'NewRantevouzServlet');
+	xhr.setRequestHeader("Content-type", "application/json");
+	xhr.send(JSON.stringify(jsonData));
+	
+}
+
 
 function setChoicesForLoggedUser(data) {
 	$("#choices").html("");
 	$("#choices").append("<h1>User Details</h1>");
 	$("#choices").append("<form id='tempForm' name='tempForm' >");
 	$("#choices").append("<label id='emailt'>Email</label>");
-	$("#choices").append("<input type='text' id='emailT' value='" + data.email +"' />");
+	$("#choices").append("<input type='text' id='emailT' value='" + data.email + "' />");
 	$("#choices").append("<label id='firstnamet'>First name</label>");
 	$("#choices").append("<input type='text' id='firstnameT' value='" + data.firstName + "' />");
 	$("#choices").append("<label id='lastnamet'>Last name</label>");
@@ -405,18 +509,23 @@ function setChoicesForLoggedUser(data) {
 	$("#choices").append("<input type='text' id='bloodtypeT' value='" + data.bloodtype + "' />");
 	$("#choices").append("<label id='gendert'>Gender</label>");
 	$("#choices").append("<input type='text' id='genderT' value='" + data.gender + "' />");
-	$("#choices").append("<button id='submit' type='button' value='Update' class='btn' onclick='updateUser(\"" +data.username + "\")' >Update</button>");
+	$("#choices").append("<button id='submit' type='button' value='Update' class='btn' onclick='updateUser(\"" + data.username + "\")' >Update</button>");
 	$("#choices").append("</form>");
-	$("#choices").append("<div><button onclick='getBMI()'>Get BMI</button></div>");
-	$("#choices").append("<div><button onclick='getIdealWeight()'>Get ideal weight</button></div>");
-	$("#choices").append("<div><button onclick='getDoctors()'>Get certified doctors</button></div>");
-	$("#choices").append("<div><button onclick='showNewBloodTest()'>Upload a blood test</button></div>");
-	$("#choices").append("<div><button onclick='compareBloodTests()'>Compare blood tests</button></div>");
-
+	if (data.specialty == undefined) {
+		$("#choices").append("<div><button onclick='getBMI()'>Get BMI</button></div>");
+		$("#choices").append("<div><button onclick='getIdealWeight()'>Get ideal weight</button></div>");
+		$("#choices").append("<div><button onclick='getDoctors()'>Get certified doctors</button></div>");
+		$("#choices").append("<div><button onclick='showNewBloodTest()'>Upload a blood test</button></div>");
+		$("#choices").append("<div><button onclick='compareBloodTests()'>Compare blood tests</button></div>");
+	}else{
+		$("#choices").append("<div><button onclick='showRandevouz(\"" + data.id + "\")'>Show Randevouz</button></div>");
+		$("#choices").append("<div><button onclick='newRandevouz(\"" + data.id + "\")'>New Randevouz</button></div>");
+		
+	}
 
 }
 
-function showNewBloodTest(){
+function showNewBloodTest() {
 	$("#bloodtests").append("<form id='tempFormBlood' name='tempFormBlood' >");
 	$("#bloodtests").append("<label id='AMKAb'>AMKA</label>");
 	$("#bloodtests").append("<input type='text' id='AMKAbt' />");
@@ -448,9 +557,9 @@ function showNewBloodTest(){
 }
 
 
-function newBloodTest(){
-	
-	
+function newBloodTest() {
+
+
 	const formData = {
 		amka: document.getElementById("AMKAbt").value,
 		test_date: document.getElementById("testDatetbt").value,
@@ -466,7 +575,7 @@ function newBloodTest(){
 		iron: document.getElementById("ironbt").value,
 		iron_level: document.getElementById("ironLevelbt").value
 	}
-	
+
 	console.log(formData)
 	var xhr = new XMLHttpRequest();
 	xhr.onload = function() {
@@ -474,7 +583,7 @@ function newBloodTest(){
 		if (xhr.readyState === 4 && xhr.status === 200) {
 			console.log(xhr.responseText)
 			responseData = JSON.parse(xhr.responseText);
-			$("#ajaxContent").html("OK: " +responseData.OK);
+			$("#ajaxContent").html("OK: " + responseData.OK);
 		} else if (xhr.status !== 200) {
 			responseData = JSON.parse(xhr.responseText);
 			$("#ajaxContent").html(responseData.error);
@@ -487,10 +596,10 @@ function newBloodTest(){
 	xhr.open('POST', 'NewBloodTestServlet');
 	xhr.setRequestHeader('Content-type', 'application/json');
 	xhr.send(JSON.stringify(formData));
-	
+
 }
-function compareBloodTests(){
-	
+function compareBloodTests() {
+
 	var xhr = new XMLHttpRequest();
 	xhr.onload = function() {
 		var responseData;
@@ -504,7 +613,7 @@ function compareBloodTests(){
 	xhr.open('POST', 'CompareBloodTestsServlet');
 	xhr.setRequestHeader('Content-type', 'application/json');
 	xhr.send(data);
-	
+
 }
 
 
@@ -531,7 +640,7 @@ function updateUser(username) {
 		var responseData;
 		if (xhr.readyState === 4 && xhr.status === 200) {
 			responseData = JSON.parse(xhr.responseText);
-			$("#ajaxContent").html("Successful update " +responseData.username);
+			$("#ajaxContent").html("Successful update " + responseData.username);
 		} else if (xhr.status !== 200) {
 			responseData = JSON.parse(xhr.responseText);
 			$("#error").html("Wrong Credentials. " + responseData.error);
@@ -558,7 +667,7 @@ function loginPOST() {
 			$("#ajaxContent").html("Successful Login. Welcome " + responseData.username);
 		} else if (xhr.status !== 200) {
 			responseData = JSON.parse(xhr.responseText);
-			$("#error").html("Wrong Credentials. " + responseData.error);
+			$("#error").html("Error:" + responseData.error);
 			//('Request failed. Returned status of ' + xhr.status);
 		}
 	};
@@ -632,9 +741,9 @@ function getBMI() {
 function getIdealWeight() {
 
 	const data = null;
-	
+
 	let height = document.getElementById("heightT").value;
-	let gender = document.getElementById("genderT").value;
+	let gender = document.getElementById("genderT").value.toLowerCase();
 
 
 	const xhr = new XMLHttpRequest();
@@ -646,13 +755,13 @@ function getIdealWeight() {
 			console.log(responseData);
 			$("#ajaxContent").html("<div>Ideal weight: </div>");
 			for (const [key, value] of Object.entries(responseData.data)) {
-  				$("#ajaxContent").append("<div>"+`${key}: ${value}`+"</div>");
+				$("#ajaxContent").append("<div>" + `${key}: ${value}` + "</div>");
 			}
-			
+
 		}
 	});
 
-	xhr.open("GET", "https://fitness-calculator.p.rapidapi.com/idealweight?gender="+gender+"&height="+height);
+	xhr.open("GET", "https://fitness-calculator.p.rapidapi.com/idealweight?gender=" + gender + "&height=" + height);
 	xhr.setRequestHeader("x-rapidapi-host", "fitness-calculator.p.rapidapi.com");
 	xhr.setRequestHeader("x-rapidapi-key", "4898357f6bmsh71d2d103cb18353p124c0fjsn4cde5c0cca54");
 
@@ -661,17 +770,17 @@ function getIdealWeight() {
 }
 
 function createTableFromJSON(data) {
-	var html="";
-	 
-	for(let i=0; i<data.length; i++){
+	var html = "";
+
+	for (let i = 0; i < data.length; i++) {
 		html += "<div><table><tr><th>Category</th><th>Value</th></tr>";
 		for (const x in data[i]) {
-			var category=x;
-			var value=data[i][x];
+			var category = x;
+			var value = data[i][x];
 			html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
 		}
-	}	
-	
+	}
+
 	html += "</table></div>";
 	return html;
 }
@@ -692,38 +801,71 @@ function getDoctors() {
 	xhr.send(data);
 }
 
-function deleteUser(data){
-		var xhr = new XMLHttpRequest();
+function deleteUser(data) {
+	var xhr = new XMLHttpRequest();
 	xhr.onload = function() {
 		var responseData;
 		if (xhr.readyState === 4 && xhr.status === 200) {
-			//responseData = JSON.parse(xhr.responseText);
+			responseData = JSON.parse(xhr.responseText);
 			//console.log(responseData);
-			//$("#ajaxContent").html(createTableFromJSON(responseData));
+			$("#ajaxContent").html(responseData[0].OK);
+			$("#ajaxContent").append(adminPrintsData(responseData));
 		}
 	};
-	var servletData="username="+data+"&";
+	var servletData = "username=" + data + "&";
 	xhr.open('POST', 'DeleteUserServlet');
 	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhr.send(servletData);
 }
 
-function adminPrintsData(data){
-		var html="";
-	 
-	for(let i=1; i<data.length; i++){
+function certifyDoctor(data) {
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			responseData = JSON.parse(xhr.responseText);
+			console.log(responseData);
+			$("#ajaxContent").html(responseData[0].OK);
+			$("#ajaxContent").append(adminPrintsData(responseData));
+		}
+	};
+	var servletData = "username=" + data + "&";
+	xhr.open('POST', 'CertifyDoctorServlet');
+	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhr.send(servletData);
+}
+
+
+function adminPrintsData(data) {
+	var html = "";
+
+	for (let i = 1; i < data.length; i++) {
 		html += "<div><table><tr><th>Category</th><th>Value</th></tr>";
 		for (const x in data[i]) {
-			var category=x;
-			var value=data[i][x];
+			var category = x;
+			var value = data[i][x];
+			if (category == "certified") {
+				if (value == 1) {
+					value = "yes";
+				} else {
+					value = "no";
+				}
+
+			}
 			html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+
 		}
-		html+="<button value=\'"+data[i].username+"\ ' onclick='deleteUser(this.value)'>Delete</button>"
+		html += "<button value=\'" + data[i].username + "\ ' onclick='deleteUser(this.value)'>Delete</button>"
+
+		if (data[i].certified != undefined && !data[i].certified) {
+			html += "<button value=\'" + data[i].username + "\ ' onclick='certifyDoctor(this.value)'>Certify</button>"
+		}
+
 	}
-		return html;
+	return html;
 }
-function adminloginPOST(){
-		var xhr = new XMLHttpRequest();
+function adminloginPOST() {
+	var xhr = new XMLHttpRequest();
 	xhr.onload = function() {
 		var responseData;
 		if (xhr.readyState === 4 && xhr.status === 200) {
@@ -745,6 +887,6 @@ function adminloginPOST(){
 	xhr.send(data);
 }
 
-function adminshowLogin(){
+function adminshowLogin() {
 	$("#ajaxContent").load("adminLogin.html");
 }

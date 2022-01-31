@@ -1,0 +1,14 @@
+
+<h2>NEW RANDEVOUZ</h2>
+<form id="newRantevouzForm" name="newRantevouzForm"
+	onsubmit='newRantevouzPOST();return false;'>
+	<label for="date_time">Date and Time</label><br> <input
+		type="Date" name="date_time" id="birthDate" value="2022-01-01"
+		min="2022-01-01" max="2023-12-31" required /> <label
+		for="time">Time </label> <input id="time" type="time"
+		name="timestamp" step="1"> <label for="price">Price</label><br>
+	<input type="number" name="price" id="price" required><br>
+	<label for="doctor_info">Doctor Info</label><br> <input
+		type="text" name="doctor_info" id="doctor_info" required><br>
+	<input type="submit" class="button" value="Create">
+</form>

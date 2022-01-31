@@ -82,6 +82,7 @@ public class AdminLoginServlet extends HttpServlet {
 						jo1.addProperty("firstName", array.get(i).getFirstname());
 						jo1.addProperty("lastName", array.get(i).getLastname());
 						jo1.addProperty("birthdate", array.get(i).getBirthdate());
+						jo1.addProperty("certified", array.get(i).getCertified());
 						array1.add(jo1);
 					}
 					for(int i=0; i<suarray.size(); i++) {

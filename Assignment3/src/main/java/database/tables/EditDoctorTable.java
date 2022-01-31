@@ -49,6 +49,14 @@ public class EditDoctorTable {
         String update = "UPDATE doctors SET height='" + height + "' WHERE username = '" + username + "'";
         stmt.executeUpdate(update);
     }
+    
+    public void certifyDoctor(String username) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        String update = "UPDATE doctors SET certified='" + 1 + "' WHERE username = '" + username + "'";
+        stmt.executeUpdate(update);
+    }
+    
 
     public void printDoctorDetails(String username, String password) throws SQLException, ClassNotFoundException {
         Connection con = DB_Connection.getConnection();

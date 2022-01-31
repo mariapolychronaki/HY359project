@@ -66,7 +66,7 @@ public class LoginServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(d!=null) {
+			if(d!=null  && d.getCertified()==1) {
 				session.setAttribute("loggedIn",username);
 				response.setStatus(200);
 				JsonObject jo = new JsonObject();
@@ -87,11 +87,18 @@ public class LoginServlet extends HttpServlet {
 				jo.addProperty("weight", d.getWeight());
 				jo.addProperty("blooddonor", d.getBlooddonor());
 				jo.addProperty("bloodtype", d.getBloodtype());
+				jo.addProperty("specialty", d.getSpecialty());
+				jo.addProperty("id", d.getDoctor_id());
 				response.getWriter().write(jo.toString());
 			}else {
 				response.setStatus(403);
 				JsonObject jo = new JsonObject();
-				jo.addProperty("error", "To username i o kwdikos einai lathos");
+				if(d==null) {
+					jo.addProperty("error", "To username i o kwdikos einai lathos");
+				}else {
+					jo.addProperty("error", "O Doctor den exei ginei certified");
+				}
+				
 				response.getWriter().write(jo.toString());
 			}
 		}else {

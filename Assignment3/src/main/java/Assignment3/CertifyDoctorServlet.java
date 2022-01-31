@@ -1,6 +1,5 @@
 package Assignment3;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,19 +14,18 @@ import com.google.gson.JsonObject;
 import database.tables.EditDoctorTable;
 import database.tables.EditSimpleUserTable;
 import mainClasses.Doctor;
-import mainClasses.JSON_Converter;
 import mainClasses.SimpleUser;
 
 /**
- * Servlet implementation class DeleteUserServlet
+ * Servlet implementation class CertifyDoctorServlet
  */
-public class DeleteUserServlet extends HttpServlet {
+public class CertifyDoctorServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public DeleteUserServlet() {
+    public CertifyDoctorServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -51,9 +49,9 @@ public class DeleteUserServlet extends HttpServlet {
 		
 		try {
 			ArrayList<JsonObject> array1 = new ArrayList<JsonObject>();
-			su.DeleteUser(username);
+			dt.certifyDoctor(username);
 			JsonObject jo = new JsonObject();
-			jo.addProperty("OK", "user "+ username+ "is deleted");
+			jo.addProperty("OK", "user "+ username+ "is certified");
 			array1.add(jo);
 			
 			
