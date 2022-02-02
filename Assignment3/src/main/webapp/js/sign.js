@@ -1,4 +1,21 @@
 
+
+
+function drawChart() {
+
+	// Create the data table.
+	var data = new google.visualization.DataTable();
+	data.addColumn('string', 'Topping');
+	data.addColumn('number', 'Slices');
+	data.addRows([
+	  ['Mushrooms', 3],
+	  ['Onions', 1],
+	  ['Olives', 1],
+	  ['Zucchini', 1],
+	  ['Pepperoni', 2]
+	]);
+}
+
 function check_password() {
 	var password_1 = document.getElementById("password1").value;
 	var password_2 = document.getElementById("password2").value;
@@ -251,6 +268,7 @@ function get_loc() {
 	} else {
 		document.getElementById("demo").innerHTML = "No gps found on this device";
 	}
+	
 }
 
 function auto_complete(lat, lon) {
@@ -480,6 +498,7 @@ function newRantevouzPOST(data2){
 
 
 function setChoicesForLoggedUser(data) {
+	
 	$("#choices").html("");
 	$("#choices").append("<h1>User Details</h1>");
 	$("#choices").append("<form id='tempForm' name='tempForm' >");
@@ -517,6 +536,7 @@ function setChoicesForLoggedUser(data) {
 		$("#choices").append("<div><button onclick='getDoctors()'>Get certified doctors</button></div>");
 		$("#choices").append("<div><button onclick='showNewBloodTest()'>Upload a blood test</button></div>");
 		$("#choices").append("<div><button onclick='compareBloodTests()'>Compare blood tests</button></div>");
+		$("#choices").append("<div><button onclick='getDoctorsDistance()'>Get Doctors Distance</button></div>");
 	}else{
 		$("#choices").append("<div><button onclick='showRandevouz(\"" + data.id + "\")'>Show Randevouz</button></div>");
 		$("#choices").append("<div><button onclick='newRandevouz(\"" + data.id + "\")'>New Randevouz</button></div>");
@@ -526,6 +546,7 @@ function setChoicesForLoggedUser(data) {
 }
 
 function showNewBloodTest() {
+	document.getElementById("chart_div").style.display="none";
 	$("#bloodtests").append("<form id='tempFormBlood' name='tempFormBlood' >");
 	$("#bloodtests").append("<label id='AMKAb'>AMKA</label>");
 	$("#bloodtests").append("<input type='text' id='AMKAbt' />");
@@ -599,6 +620,7 @@ function newBloodTest() {
 
 }
 function compareBloodTests() {
+	document.getElementById("chart_div").style.display="block";
 
 	var xhr = new XMLHttpRequest();
 	xhr.onload = function() {
@@ -607,6 +629,41 @@ function compareBloodTests() {
 			responseData = JSON.parse(xhr.responseText);
 			console.log(responseData);
 			$("#ajaxContent").html(createTableFromJSON(responseData));
+			
+
+			google.charts.load('current', {packages: ['corechart', 'bar']});
+			google.charts.setOnLoadCallback(drawMaterial);
+
+			function drawMaterial() {
+				var array=[['Index', 'Blood_Sugar', 'Cholesterol','Vitamin_B12','Vitamin_D3','Iron']]
+				console.log(responseData)
+
+				responseData.map((data,index)=>{
+					array.push([("BloodTest"+index),data.blood_sugar,data.cholesterol,data.vitamin_b12,data.vitamin_d3,data.iron])
+				})
+				console.log(array)
+				var data = google.visualization.arrayToDataTable(array);
+
+				var materialOptions = {
+					chart: {
+						title: 'Blood tests'
+					},
+					hAxis: {
+						title: 'Metrics',
+						minValue: 0,
+					},
+					vAxis: {
+						title: 'Index'
+					},
+					bars: 'horizontal',
+					height: 500,
+					width: 800
+				};
+				
+				var materialChart = new google.charts.Bar(document.getElementById('chart_div'));
+				materialChart.draw(data, materialOptions);
+	
+			}
 		}
 	};
 	var data = null;
@@ -614,6 +671,102 @@ function compareBloodTests() {
 	xhr.setRequestHeader('Content-type', 'application/json');
 	xhr.send(data);
 
+}
+
+
+function getDoctorsDistance(){
+	document.getElementById("chart_div").style.display="none";
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			responseData = JSON.parse(xhr.responseText);
+			console.log(responseData);
+			var lat;
+			var lon;
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function(position) {
+					lat = position.coords.latitude;
+					lon = position.coords.longitude;
+					
+					getDistanceCall(responseData,lon,lat);
+
+				});
+			}
+		}
+	};
+	var data = null;
+	xhr.open('POST', 'GetDoctorsServlet');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(data);
+}
+
+function getDistanceCall(rdata,lon,lat){
+	const data = null;
+
+	const xhr = new XMLHttpRequest();
+	xhr.withCredentials = true;
+
+	xhr.addEventListener("readystatechange", function () {
+		if (this.readyState === this.DONE) {
+			var responseData=JSON.parse(this.responseText)
+			console.log(responseData,responseData.distances,responseData.durations)
+
+			var tempDistances=[];
+			responseData.distances[0].map((data,index)=>{
+				tempDistances.push({id:index,distance:data})
+			})
+
+			
+			responseData.durations[0].map((data,index)=>{
+				tempDistances[index]={...tempDistances[index],duration:data}
+			})
+
+
+			
+			
+			tempDistances.sort(function (a, b) {
+				return a.distance - b.distance;
+			});
+			
+			tempDistances.sort(function (a, b) {
+				return a.duration - b.duration;
+			});
+			console.log(tempDistances)
+
+
+			result=[];
+			tempDistances.forEach(function(key) {
+				var found = false;
+				rdata = rdata.filter(function(item,index) {
+					if(!found && index == key.id) {
+						result.push(item);
+						found = true;
+						return false;
+					} else 
+						return true;
+				})
+			})
+
+			console.log(result)
+
+			$("#ajaxContent").html(createTableFromJSONForDocs(result))
+
+		}
+	});
+
+	var string="";
+	rdata.forEach((doc,index)=>{
+		
+		string = string + doc.lat+"%2C"+doc.lon+"%3B"
+	
+	})
+
+	xhr.open("GET", "https://trueway-matrix.p.rapidapi.com/CalculateDrivingMatrix?origins="+lat+"%2C"+lon+"&destinations="+string);
+	xhr.setRequestHeader("x-rapidapi-host", "trueway-matrix.p.rapidapi.com");
+	xhr.setRequestHeader("x-rapidapi-key", "4898357f6bmsh71d2d103cb18353p124c0fjsn4cde5c0cca54");
+
+	xhr.send(data);
 }
 
 
@@ -682,6 +835,7 @@ function logout() {
 	xhr.onload = function() {
 		if (xhr.readyState === 4 && xhr.status === 200) {
 			$("#ajaxContent").html("Successful Logout");
+			$("#choices").html("");
 		} else if (xhr.status !== 200) {
 			alert('Request failed. Returned status of ' + xhr.status);
 		}
@@ -706,6 +860,7 @@ function _calculateAge(birthday) { // birthday is a date
 }
 
 function getBMI() {
+	document.getElementById("chart_div").style.display="none";
 	const data = null;
 	let weight = document.getElementById("weightT").value;
 	let height = document.getElementById("heightT").value;
@@ -739,7 +894,7 @@ function getBMI() {
 
 
 function getIdealWeight() {
-
+	document.getElementById("chart_div").style.display="none";
 	const data = null;
 
 	let height = document.getElementById("heightT").value;
@@ -785,7 +940,80 @@ function createTableFromJSON(data) {
 	return html;
 }
 
+function createTableFromJSONForDocs(data) {
+	var html = "";
+
+	for (let i = 0; i < data.length; i++) {
+		html += "<div><table><tr><th>Category</th><th>Value</th></tr>";
+		for (const x in data[i]) {
+			var category = x;
+			var value = data[i][x];
+			html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+		}
+		html += "<button value=\'"+ data[i].username +"\' onclick='selectDoc(this.value)'>Select</button>"
+	}
+
+	html += "</table></div>";
+	return html;
+}
+
+function selectRandevouz(data){
+
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			responseData = JSON.parse(xhr.responseText);
+			console.log(responseData);
+			//$("#ajaxContent").html(responseData[0].OK);
+			//$("#ajaxContent").append(adminPrintsData(responseData));
+		}
+	};
+	var servletData = "randevouz_id=" + data + "&";
+	xhr.open('POST', 'BookRandevouzServlet');
+	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhr.send(servletData);
+
+
+}
+
+function createTableFromJSONRandevouz(data) {
+	var html = "";
+	console.log(data)
+
+	for (let i = 0; i < data.length; i++) {
+		html += "<div><table><tr><th>Category</th><th>Value</th></tr>";
+		for (const x in data[i]) {
+			var category = x;
+			var value = data[i][x];
+			html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
+		}
+		html += "<button value=\'"+ data[i].randevouz_id +"\' onclick='selectRandevouz(this.value)'>Select</button>"
+	}
+
+	html += "</table></div>";
+	return html;
+}
+
+function selectDoc(data){
+	document.getElementById("chart_div").style.display="none";
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			responseData = JSON.parse(xhr.responseText);
+			console.log(responseData);
+			$("#ajaxContent").html(createTableFromJSONRandevouz(responseData));
+		}
+	};
+	var servletData = "username=" + data + "&";
+	xhr.open('POST', 'GetDocRandevouzServlet');
+	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhr.send(servletData);
+}
+
 function getDoctors() {
+	document.getElementById("chart_div").style.display="none";
 	var xhr = new XMLHttpRequest();
 	xhr.onload = function() {
 		var responseData;

@@ -82,6 +82,18 @@
   	<description></description>
   	<servlet-class>Assignment3.NewRantevouzSevrelt</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>GetDocRandevouzServlet</servlet-name>
+  	<display-name>GetDocRandevouzServlet</display-name>
+  	<description></description>
+  	<servlet-class>Assignment3.GetDocRandevouzServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>BookRandevouzServlet</servlet-name>
+  	<display-name>BookRandevouzServlet</display-name>
+  	<description></description>
+  	<servlet-class>Assignment3.BookRandevouzServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>RegisterServlet</servlet-name>
   	<url-pattern>/RegisterServlet</url-pattern>
@@ -133,5 +145,13 @@
   <servlet-mapping>
   	<servlet-name>NewRantevouzSevrelt</servlet-name>
   	<url-pattern>/NewRantevouzSevrelt</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>GetDocRandevouzServlet</servlet-name>
+  	<url-pattern>/GetDocRandevouzServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>BookRandevouzServlet</servlet-name>
+  	<url-pattern>/BookRandevouzServlet</url-pattern>
   </servlet-mapping>
 </web-app>
