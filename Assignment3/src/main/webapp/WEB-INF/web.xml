@@ -105,6 +105,18 @@
 		<description></description>
 		<servlet-class>Assignment3.DeleteRandevouzServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>GetSpecificRandevouzServlet</servlet-name>
+		<display-name>GetSpecificRandevouzServlet</display-name>
+		<description></description>
+		<servlet-class>Assignment3.GetSpecificRandevouzServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>UpdateRandevouzServlet</servlet-name>
+		<display-name>UpdateRandevouzServlet</display-name>
+		<description></description>
+		<servlet-class>Assignment3.UpdateRandevouzServlet</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>RegisterServlet</servlet-name>
 		<url-pattern>/RegisterServlet</url-pattern>
@@ -172,5 +184,13 @@
 	<servlet-mapping>
 		<servlet-name>DeleteRandevouzServlet</servlet-name>
 		<url-pattern>/DeleteRandevouzServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>GetSpecificRandevouzServlet</servlet-name>
+		<url-pattern>/GetSpecificRandevouzServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UpdateRandevouzServlet</servlet-name>
+		<url-pattern>/UpdateRandevouzServlet</url-pattern>
 	</servlet-mapping>
 </web-app>
