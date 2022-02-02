@@ -71,7 +71,7 @@ public class BookRandevouzServlet extends HttpServlet {
 				rand.setUser_id(ed.databaseToSimpleUserID(username).getUser_id());
 				er.updateRandevouz(id, rand.getUser_id(), rand.getUser_info(), "selected");
 				
-				
+				/*
 				
 				 // Recipient's email ID needs to be mentioned.
 			      String to = d.getEmail();
@@ -114,8 +114,12 @@ public class BookRandevouzServlet extends HttpServlet {
 			      } catch (MessagingException mex) {
 			         mex.printStackTrace();
 			      }
-			      
+			      */
 				
+				JsonObject jo = new JsonObject();
+				response.setStatus(200);
+				jo.addProperty("OK", "To Randevouz gia tis"+rand.getDate_time()+" egine selected!");
+				response.getWriter().write(jo.toString());
 				
 			}else {
 				response.setStatus(403);

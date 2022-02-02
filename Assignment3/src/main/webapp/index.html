@@ -7,10 +7,24 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript"
 	src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
 </head>
 <body>
 	<div class="options">
 		<h1>Please Register or Login</h1>
+		<div id="info">
+			<a href="https://www.vrisko.gr/efimeries-farmakeion/irakleio" target="_blank"><img src="https://www.vrisko.gr/graphlink/Pharmacies/image/468x60_Banner_n/?Region=irakleio&NativeRegion=%ce%97%cf%81%ce%ac%ce%ba%ce%bb%ce%b5%ce%b9%ce%bf&" border="0" alt="Εφημερεύοντα Φαρμακεία Ηράκλειο" /></a>
+			<a href="https://www.vrisko.gr/efimeries-nosokomeion?SelectedCity=hrakleio" target="_blank"><img src="https://www.vrisko.gr/graphlink/Hospitals/image/468x60_Banner_n/?Prefecture=hrakleio&NativePrefecture=%ce%97%ce%a1%ce%91%ce%9a%ce%9b%ce%95%ce%99%ce%9f&" border="0" alt="Εφημερεύοντα Νοσοκομεία ΗΡΑΚΛΕΙΟ" /></a>
+			<div>
+			<a href="https://www.ekab.gr/files/entypa/EKAB-protes-voithies.pdf">First aid</a>
+			</div> 
+			<div>
+			<a href="https://www.venizeleio.gr/">Venizeleio hospital</a>
+			</div>
+			<div>
+			<a href="https://covid19.gov.gr/">Covid-19</a>
+			</div>
+		</div>
 		<input id="register" type="button" value="Register"
 			onclick="showRegistrationForm();" class="btn" /> <input
 			id="adminlogin" type="button" value="Admin Login"
@@ -18,10 +32,17 @@
 			type="button" value="Login" onclick="showLogin();" class="btn" /> <input
 			id="logout" type="button" value="Logout" onclick="logout();"
 			class="btn" style="display: none;" />
+
+			<input
+			id="getDoctorsButton" type="button" value="Doctors" onclick="showMapDocs();"
+			class="btn" />
 	</div>
 
 	<div>
 		<h2>HY 359</h2>
+		<input id="flag" value="false" style="display: none";/>
+		<div id="doc_container" style="display: none;height: 500px;" name="false">
+		</div>
 
 
 		<div class="row">

@@ -392,6 +392,90 @@ function createUser() {
 	xhr.send(JSON.stringify(data));
 }
 
+function showMapDocs(){
+	var docFlag=document.getElementById("flag").value;
+	
+	if(docFlag==="false"){
+		createMapDocs();
+		document.getElementById("doc_container").style.display="block"
+		document.getElementById("flag").value="true"
+	}else{
+		document.getElementById("doc_container").style.display="none"
+		document.getElementById("doc_container").innerHTML=""
+		document.getElementById("flag").value="false"
+	}
+	
+}
+
+function createMapDocs(){
+
+	document.getElementById("chart_div").style.display="none";
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			responseData = JSON.parse(xhr.responseText);
+			console.log(responseData);
+			
+			
+			var map = new OpenLayers.Map("doc_container");
+			var mapnik = new OpenLayers.Layer.OSM();
+			map.addLayer(mapnik);
+
+			function setPosition(lat, lon) {
+				var fromProjection = new OpenLayers.Projection("EPSG:4326"); // Transform from WGS 1984
+				var toProjection = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
+				var position = new OpenLayers.LonLat(lon, lat).transform(
+					fromProjection,
+					toProjection
+				);
+				return position;
+			}
+
+			function handler(position, message) {
+				var popup = new OpenLayers.Popup.FramedCloud(
+					"Popup",
+					position,
+					null,
+					message,
+					null,
+					true // <-- true if we want a close (X) button, false otherwise
+				);
+				map.addPopup(popup);
+				var div = document.getElementById("divID");
+				div.innerHTML += "Energopoitihike o Handler<br>";
+			}
+
+			//Markers
+			var markers = new OpenLayers.Layer.Markers("Markers");
+			map.addLayer(markers);
+
+			//Protos Marker
+			responseData.map((data)=>{
+				var position = setPosition(data.lat, data.lon);
+				var mar = new OpenLayers.Marker(position);
+				markers.addMarker(mar);
+				mar.events.register("mousedown", mar, function(evt) {
+					handler(position, data.firstName+" "+data.lastName);
+				});
+			})
+			
+
+			//Orismos zoom
+			const zoom = 13;
+			map.setCenter(setPosition(35.3387, 25.1442), zoom);
+
+		}
+	};
+	var data = null;
+	xhr.open('POST', 'GetDoctorsServlet');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(data);
+
+
+	
+}
+
 function showRandevouzForm(){
 $("#choices").load("loadRandevouz.html");
 }
@@ -965,8 +1049,10 @@ function selectRandevouz(data){
 		if (xhr.readyState === 4 && xhr.status === 200) {
 			responseData = JSON.parse(xhr.responseText);
 			console.log(responseData);
-			//$("#ajaxContent").html(responseData[0].OK);
+			$("#ajaxContent").html(responseData.OK);
 			//$("#ajaxContent").append(adminPrintsData(responseData));
+		}else{
+			$("#ajaxContent").html(responseData.error);
 		}
 	};
 	var servletData = "randevouz_id=" + data + "&";
@@ -1020,7 +1106,7 @@ function getDoctors() {
 		if (xhr.readyState === 4 && xhr.status === 200) {
 			responseData = JSON.parse(xhr.responseText);
 			console.log(responseData);
-			$("#ajaxContent").html(createTableFromJSON(responseData));
+			$("#ajaxContent").html(createTableFromJSONForDocs(responseData));
 		}
 	};
 	var data = null;
