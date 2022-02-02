@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.google.gson.JsonObject;
 
@@ -43,10 +44,14 @@ public class GetRandevouzServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String doctor_id=request.getParameter("doctor_id");
+		System.out.println(doctor_id);
 		int  id =Integer.parseInt(doctor_id);
 		EditRandevouzTable rand = new EditRandevouzTable();
 		ArrayList<Randevouz> rtemp = null;
 		ArrayList<JsonObject> array1 = new ArrayList<JsonObject>();
+		
+		HttpSession session=request.getSession(true);
+		
 		try {
 			 rtemp = rand.databaseToRandevouzDoctor(id);
 			 for(int i=0; i<rtemp.size(); i++) {

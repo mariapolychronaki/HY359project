@@ -392,9 +392,7 @@ function createUser() {
 	xhr.send(JSON.stringify(data));
 }
 
-function showRandevouzForm(){
-$("#choices").load("loadRandevouz.html");
-}
+
 
 function getRandevouz(data){
 		
@@ -417,7 +415,7 @@ function getRandevouz(data){
 function checkDate(){
 	var d1 = new Date();
 	d1.setHours(0,0,0,0);
-	var d2 = new Date(document.getElementById('date_time').value);
+	var d2 = new Date(document.getElementById('date').value);
 	d2.setHours(0,0,0,0);
 	var check = d1.getTime() < d2.getTime();
 	console.log(d1,d2);
@@ -429,7 +427,7 @@ function checkDate(){
 }
 
 function checkPrice(){
-	var p = new Date(document.getElementById('price').value);
+	var p = document.getElementById('price').value;
 	if(p<10 || p>80){
 		document.getElementById('priceError').innerHTML="price can't be  greater than 80 or less than 10!";
 	}else{
@@ -442,9 +440,9 @@ function newRandevouz(id){
 $("#randevouz").html("");
 	$("#randevouz").append("<h1>New Randevouz</h1>");
 	$("#randevouz").append("<form id='tempForm' name='tempForm' >");
-	$("#randevouz").append("<label for='date_time'>Date and Time</label>");
+	$("#randevouz").append("<label for='date'>Date and Time</label>");
 	$("#randevouz").append("<div id='dateError'></div>"); 
-	$("#randevouz").append("<input type='Date' onchange='checkDate()' name='date_time' id='date_time' value='2022-01-01' min='2022-01-01' max='2023-12-31' required />");
+	$("#randevouz").append("<input type='Date' onchange='checkDate()' name='date' id='date' value='2022-01-01' min='2022-01-01' max='2023-12-31' required />");
 	$("#randevouz").append("<label for='time'>Time </label>");
 	$("#randevouz").append("<div id='timeError'></div>"); 
 	$("#randevouz").append("<input id='time' value type='time' name='timestamp' step='1800' min='08:00' max='20:30' >");
@@ -453,49 +451,146 @@ $("#randevouz").html("");
 	$("#randevouz").append("<input type='number' name='price'onchange='checkPrice()' id='price' min='10' max='80' required>");
 	$("#randevouz").append("<label for='doctor_info'>Doctor Info</label>");
 	$("#randevouz").append("<input type='text' name='doctor_info' id='doctor_info'>");
-	$("#randevouz").append("<button id='submit' type='button' value='Create' class='btn' onclick='newRantevouzPOST(\"" + id + "\")' >Update</button>");
+	$("#randevouz").append("<button id='submit' type='button' value='Create' class='btn' onclick='newRantevouzPOST(\"" + id + "\")' >Create</button>");
 	$("#randevouz").append("</form>");
 
 }
 
 function newRantevouzPOST(data2){
-	
-	//let myForm = document.getElementById('newRantevouzForm');
-	//let formData = new FormData(myForm);
-	console.log(data2);
-	
-	//formData.forEach((value, key) => (data[key] = value));
-	var jsonData  = {
-		doctor_id : data2,
-		price: document.getElementById('price').value,
-		doctor_info:  document.getElementById('doctor_info').value,
-		date_time:  document.getElementById('date_time').value+' '+ document.getElementById('time').value
-	}
-
-	console.log(jsonData);
-
-
 	var xhr = new XMLHttpRequest();
 	xhr.onload = function() {
+		var responseData;
 		if (xhr.readyState === 4 && xhr.status === 200) {
-			const responseData = JSON.parse(xhr.responseText);
-			console.log(responseData)
-			if (responseData.doctor_id != null) {
-				document.getElementById('ajaxContent').innerHTML = 'Request OK. Doctor : ' + responseData.username + ' is added . Returned status of ' + xhr.status + "<br>";
-			} else {
-				document.getElementById('ajaxContent').innerHTML = 'Request OK. User : ' + responseData.username + ' is added . Returned status of ' + xhr.status + "<br>";
-			}
-
+			console.log(xhr.responseText)
+			responseData = JSON.parse(xhr.responseText);
+			$("#ajaxContent").html("OK: " + responseData.OK);
 		} else if (xhr.status !== 200) {
-			document.getElementById('ajaxContent').innerHTML = 'Request failed ' + xhr.responseText + '. Returned status of ' + xhr.status + "<br>";
+			//responseData = JSON.parse(xhr.responseText);
+			//$("#ajaxContent").html(responseData.error);
+			//('Request failed. Returned status of ' + xhr.status);
 		}
 	}
-	xhr.open('POST', 'NewRantevouzServlet');
-	xhr.setRequestHeader("Content-type", "application/json");
-	xhr.send(JSON.stringify(jsonData));
 	
+		var jsonData  = {
+		user_info: "",
+		user_id: "0",
+		status:"free",
+		doctor_id : data2,
+		price: document.getElementById('price').value,
+		doctor_info:document.getElementById('doctor_info').value,
+		date_time:  document.getElementById('date').value+' '+ document.getElementById('time').value
+	}
+	
+	console.log(jsonData);
+	xhr.open('POST', 'NewRantevouzServlet');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(JSON.stringify(jsonData));
 }
 
+function canselrandevouz(data){
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			responseData = JSON.parse(xhr.responseText);
+			console.log(responseData);
+			$("#ajaxContent").html(responseData[0].OK);
+			$("#ajaxContent").append(adminPrintsData(responseData));
+		}
+	};
+	var servletData = data;
+	xhr.open('POST', 'ChangeRandevouzStatus');
+	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhr.send(servletData);
+}
+
+
+function randevouzPrintsData(data){
+	var html = "";
+	console.log(data)
+
+	for (let i = 0; i < data.length; i++) {
+		html += "<br><div> <form id='updateRandevouzForm' onsubmit='updateRandevouz()' > ";
+		for (const x in data[i]) {
+			var category = x;
+			var value = data[i][x];
+			if(category=='randevouz_id'  || category=='doctor_id') continue;
+			html += "<label>" + category + "</label><input id=\'"+ category +i+"\' name=\'"+ category +i+"\' value=\'"+ value +"\'/>"  ;
+		}
+		html += "<br><button value=\'"+ data[i].randevouz_id +"\' type='submit' '>Update</button>"
+
+		if(data[i].status!='cancelled'  || data[i].status!='done'){
+			html += "<button value=\'"+ data[i].randevouz_id+"_"+data[i].doctor_id +"\' onclick='cancelRandevouz(this.value)'>Cancel</button>"
+		}
+	}
+
+	html += "</form></div><br>";
+	return html;
+}
+
+function updateRandevouz(data){
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			responseData = JSON.parse(xhr.responseText);
+			$("#ajaxContent").html("Successful update " + responseData.username);
+		} else if (xhr.status !== 200) {
+			responseData = JSON.parse(xhr.responseText);
+			$("#error").html("Wrong Credentials. " + responseData.error);
+			//('Request failed. Returned status of ' + xhr.status);
+		}
+	};
+	console.log(data);
+	var data = formData
+	console.log(formData)
+	xhr.open('POST', 'UpdateRandevouzServlet');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.send(JSON.stringify(formData));
+}
+
+function cancelRandevouz(obj){
+		var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			responseData = JSON.parse(xhr.responseText);
+			//console.log(responseData);
+			$("#ajaxContent").html(responseData[0].OK);
+			$("#ajaxContent").append(randevouzPrintsData(responseData));
+		}
+	};
+	var randevouz_id=obj.substring(0,obj.indexOf("_"));
+	var doctor_id=obj.substring(obj.indexOf("_")+1);
+	console.log(doctor_id);
+	var servletData = "randevouz_id=" + randevouz_id + "&" + "doctor_id=" +doctor_id +  "&" ;
+	xhr.open('POST', 'DeleteRandevouzServlet');
+	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhr.send(servletData);
+}
+
+function showRandevouz(input){
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		var responseData;
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			responseData = JSON.parse(xhr.responseText);
+			console.log(responseData);
+			//$("#ajaxContent").html(responseData[0].OK);
+			$("#ajaxContent").append(randevouzPrintsData(responseData));
+		} else if (xhr.status !== 200) {
+			responseData = JSON.parse(xhr.responseText);
+			$("#error").html(responseData.error);
+			//('Request failed. Returned status of ' + xhr.status);
+		}
+	};
+	var servletData = "doctor_id=" + input + "&";
+	console.log(servletData);
+	xhr.open('POST', 'GetRandevouzServlet');
+	
+	xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	xhr.send(servletData);
+}
 
 function setChoicesForLoggedUser(data) {
 	
@@ -988,7 +1083,8 @@ function createTableFromJSONRandevouz(data) {
 			var value = data[i][x];
 			html += "<tr><td>" + category + "</td><td>" + value + "</td></tr>";
 		}
-		html += "<button value=\'"+ data[i].randevouz_id +"\' onclick='selectRandevouz(this.value)'>Select</button>"
+		html += "<button value=\'"+ data[i].randevouz_id +"\' onclick='selectRandevouz(this.value)'>Update</button>"
+
 	}
 
 	html += "</table></div>";
