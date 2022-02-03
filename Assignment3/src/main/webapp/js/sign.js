@@ -597,7 +597,7 @@ function randevouzPrintsData(data){
 
 	var html = "";
 
-	for (let i = 1; i < data.length; i++) {
+	for (let i = 0; i < data.length; i++) {
 		html += "<div><table><tr><th>Category</th><th>Value</th></tr>";
 		for (const x in data[i]) {
 			var category = x;
@@ -712,8 +712,10 @@ function specificRandevouzPrints(data){
 		$("#ajaxContent").append("<form id='tempForm' name='tempForm' >");
 		$("#ajaxContent").append("<label for='user_info'>User Info</label>");
 		$("#ajaxContent").append("<input type='text' name='user_info' id='user_info' value='" + data.user_info + "'  disabled>");
+		$("#ajaxContent").append("<label for='randevouz_id'>Randevouz Id</label>");
+		$("#ajaxContent").append("<input type='text' name='randevouz_id' id='randevouz_id' value='" + data.randevouz_id + "'  disabled>");
 		$("#ajaxContent").append("<label for='user_id'>User id</label>");
-		$("#ajaxContent").append("<input type='text' name='user_id' id='user_id' value='" + data.user_id + "' value=disabled>");
+		$("#ajaxContent").append("<input type='text' name='user_id' id='user_id' value='" + data.user_id + "' disabled>");
 		$("#ajaxContent").append("<label for='doctor_id'>Doctor id</label>");
 		$("#ajaxContent").append("<input type='text' name='doctor_id' id='doctor_id' value='" + data.doctor_id + "' disabled>");
 		$("#ajaxContent").append("<label for='date'>Date</label>");
@@ -750,11 +752,12 @@ function specificRandevouzUpdatePOST(data2){
 	}
 	console.log(data2)
 	var jsonData  = {
+		randevouz_id: document.getElementById('randevouz_id').value,
 		user_info: document.getElementById('user_info').value,
-		user_id: document.getElementById('user_id').value,
+		user_id: parseInt(document.getElementById('user_id').value),
 		status:document.getElementById('status').value,
-		doctor_id :document.getElementById('doctor_id').value,
-		price: document.getElementById('price').value,
+		doctor_id :parseInt(document.getElementById('doctor_id').value),
+		price: parseInt(document.getElementById('price').value),
 		doctor_info:document.getElementById('doctor_info').value,
 		date_time:  document.getElementById('date').value+' '+ document.getElementById('time').value
 	}
